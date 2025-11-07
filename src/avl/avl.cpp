@@ -61,18 +61,7 @@ Node *rotateLeft(Node *unbalanced) {
   return rightNode;
 }
 
-Node *insert(Node *node, int value) {
-  if (node == nullptr) {
-    return new Node(value);
-  }
-
-  if (value > node->data) {
-    node->right = insert(node->right, value);
-  } else if (value < node->data) {
-    node->left = insert(node->left, value);
-  }
-
-  node->height = 1 + max(height(node->left), height(node->right));
+Node *balanceNode(Node *node, int value) {
   int bal = balance(node);
 
   if (bal > 1 && node->left->data > value) {
@@ -92,8 +81,68 @@ Node *insert(Node *node, int value) {
     node->right = rotateRight(node->right);
     return rotateLeft(node);
   }
-
   return node;
+  ;
+}
+
+Node *insert(Node *node, int value) {
+  if (node == nullptr) {
+    return new Node(value);
+  }
+
+  if (value > node->data) {
+    node->right = insert(node->right, value);
+  } else if (value < node->data) {
+    node->left = insert(node->left, value);
+  }
+
+  node->height = 1 + max(height(node->left), height(node->right));
+
+  return balanceNode(node, value);
+}
+
+Node *minValueNode(Node *node) {
+  Node *current = node;
+  while (current->left != nullptr) {
+    current = current->left;
+  }
+  return current;
+}
+
+Node *deleteNode(Node *node, int value) {
+  if (node == nullptr) {
+    return node;
+  }
+
+  if (value < node->data) {
+    node->left = deleteNode(node->left, value);
+  } else if (value > node->data) {
+    node->right = deleteNode(node->right, value);
+  } else {
+    // Node with only one child or no child
+    if (node->left == nullptr || node->right == nullptr) {
+      Node *temp = node->left ? node->left : node->right;
+      if (temp == nullptr) {
+        temp = node;
+        node = nullptr;
+      } else {
+        *node = *temp;
+      }
+      delete temp;
+    } else {
+      // Node with two children
+      Node *temp = minValueNode(node->right);
+      node->data = temp->data;
+      node->right = deleteNode(node->right, temp->data);
+    }
+  }
+
+  if (node == nullptr) {
+    return node;
+  }
+
+  node->height = 1 + max(height(node->left), height(node->right));
+  return balanceNode(node, value);
 }
 
 void preOrder(Node *root) {
@@ -145,10 +194,10 @@ static void compute_layout(Node *r, int x1, int x2, int y, int ys,
 class AVLSceneImpl : public Scene {
   Node *root = nullptr;
   string buf;
-  vector<int> hist;
+  vector<string> hist;
   int hist_max = 8;
 
-  void push_hist(int k) {
+  void push_hist(string k) {
     if ((int)hist.size() == hist_max)
       hist.erase(hist.begin());
     hist.push_back(k);
@@ -170,7 +219,7 @@ class AVLSceneImpl : public Scene {
   }
 
 public:
-  const char *title() const { return "AVL Tree (insert only)"; }
+  const char *title() const { return "AVL Tree"; }
   ~AVLSceneImpl() { clear_tree(); }
 
   void on_key(int key) {
@@ -201,10 +250,18 @@ public:
     } else if (key == '\n') {
       if (!buf.empty()) {
         int k = atoi(buf.c_str());
-        buf.clear();
         root = insert(root, k);
-        push_hist(k);
+        push_hist(buf + "I");
+        buf.clear();
       }
+    } else if (key == 'd') {
+      if (!buf.empty()) {
+        int k = atoi(buf.c_str());
+        root = deleteNode(root, k);
+        push_hist(buf + "D");
+        buf.clear();
+      }
+
     } else if (key == 'r') {
       int a[] = {30, 20, 40, 10, 25, 35, 50, 5, 15, 27};
       for (int v : a)
@@ -224,13 +281,13 @@ public:
     int cpw = min(48, max(30, W / 3));
     frame(2, 5, cpw, 7);
     printxy(4, 6, string("Input: ") + (buf.empty() ? "_" : buf));
-    printxy(4, 7, "[Enter] insert   [c] clear   [r] sample");
-    printxy(4, 8, "[b/Esc] back     [q q] quit");
+    printxy(4, 7, "[Enter] insert  [d] Delete [r] sample");
+    printxy(4, 8, "[b/Esc] back  [c] clear   [q q] quit");
 
     frame(2, 13, cpw, 5);
     string h = "History: ";
-    for (int k : hist)
-      h += to_string(k) + " ";
+    for (string k : hist)
+      h += k + " ";
     printxy(4, 14, h);
 
     int dx = cpw + 3, dw = W - dx - 3, dy = 5, dh = H - dy - 3;
