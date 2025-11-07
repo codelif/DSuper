@@ -1,8 +1,8 @@
 CXX := g++
-CXXFLAGS := -std=gnu++11 -O2 -Wall -I.
+CXXFLAGS := -std=gnu++11 -O2 -Wall -I./src
 SRCDIR = src
 
-SRC = $(wildcard $(SRCDIR)/*.cpp)
+SRC := $(shell find $(SRCDIR) -name '*.cpp')
 OBJ := $(SRC:.cpp=.o)
 
 dsuper: $(OBJ)

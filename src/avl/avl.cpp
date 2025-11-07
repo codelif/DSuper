@@ -1,13 +1,11 @@
-#include "app.h"
-#include "scene.h"
-#include "tui.h"
+#include "../app.h"
+#include "../scene.h"
+#include "../tui.h"
 #include <algorithm>
 #include <cstdlib>
 #include <sstream>
 #include <string>
 #include <vector>
-using namespace std;
-
 
 #include <iostream>
 using namespace std;
@@ -105,8 +103,6 @@ void preOrder(Node *root) {
     preOrder(root->right);
   }
 }
-
-
 
 struct Pos {
   Node *n;
