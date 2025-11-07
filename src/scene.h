@@ -6,7 +6,7 @@ struct Scene {
   virtual const char *title() const = 0;
 };
 
-
-Scene* make_menu_scene();
-Scene* make_avl_scene();
-Scene* make_rbt_scene();
+Scene *make_menu_scene();
+Scene *make_avl_scene();
+Scene *make_rbt_scene();
+Scene *make_bst_scene();

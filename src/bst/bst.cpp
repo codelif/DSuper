@@ -9,99 +9,28 @@
 
 #include <iostream>
 using namespace std;
+
 class Node {
 public:
   int data;
   Node *left;
   Node *right;
-  int height;
-  Node(int value) : data(value), left(nullptr), right(nullptr), height(1) {}
+  Node(int value) : data(value), left(nullptr), right(nullptr) {}
 };
 
-int height(Node *node) {
-  if (node == nullptr) {
-    return 0;
-  }
-  return node->height;
-}
-
-int balance(Node *node) {
-  if (node == nullptr) {
-    return 0;
-  }
-  return height(node->left) - height(node->right);
-}
-
-Node *rotateRight(Node *unbalanced) {
-  Node *leftNode = unbalanced->left;
-  Node *temp = leftNode->right;
-
-  unbalanced->left = temp;
-  leftNode->right = unbalanced;
-
-  unbalanced->height =
-      1 + max(height(unbalanced->left), height(unbalanced->right));
-  leftNode->height = 1 + max(height(leftNode->left), height(leftNode->right));
-
-  return leftNode;
-}
-
-Node *rotateLeft(Node *unbalanced) {
-  Node *rightNode = unbalanced->right;
-  Node *temp = rightNode->left;
-
-  unbalanced->right = temp;
-  rightNode->left = unbalanced;
-
-  unbalanced->height =
-      1 + max(height(unbalanced->left), height(unbalanced->right));
-  rightNode->height =
-      1 + max(height(rightNode->left), height(rightNode->right));
-
-  return rightNode;
-}
-
-Node *balanceNode(Node *node, int value) {
-  int bal = balance(node);
-
-  if (bal > 1 && node->left->data > value) {
-    return rotateRight(node);
-  }
-
-  else if (bal < -1 && node->right->data < value) {
-    return rotateLeft(node);
-  }
-
-  else if (bal > 1 && node->left->data < value) {
-    node->left = rotateLeft(node->left);
-    return rotateRight(node);
-  }
-
-  else if (bal < -1 && node->right->data > value) {
-    node->right = rotateRight(node->right);
-    return rotateLeft(node);
-  }
-  return node;
-  ;
-}
-
-Node *insertAVL(Node *node, int value) {
+Node *insert(Node *node, int value) {
   if (node == nullptr) {
     return new Node(value);
   }
-
   if (value > node->data) {
-    node->right = insertAVL(node->right, value);
+    node->right = insert(node->right, value);
   } else if (value < node->data) {
-    node->left = insertAVL(node->left, value);
+    node->left = insert(node->left, value);
   }
-
-  node->height = 1 + max(height(node->left), height(node->right));
-
-  return balanceNode(node, value);
+  return node;
 }
 
-Node *minValueNodeAVL(Node *node) {
+Node *minValueNode(Node *node) {
   Node *current = node;
   while (current->left != nullptr) {
     current = current->left;
@@ -109,48 +38,34 @@ Node *minValueNodeAVL(Node *node) {
   return current;
 }
 
-Node *deleteNodeAVL(Node *node, int value) {
-  if (node == nullptr) {
-    return node;
+Node *deleteNode(Node *root, int value) {
+  if (root == nullptr) {
+    return root;
   }
 
-  if (value < node->data) {
-    node->left = deleteNodeAVL(node->left, value);
-  } else if (value > node->data) {
-    node->right = deleteNodeAVL(node->right, value);
+  if (value < root->data) {
+    root->left = deleteNode(root->left, value);
+  } else if (value > root->data) {
+    root->right = deleteNode(root->right, value);
   } else {
     // Node with only one child or no child
-    if (node->left == nullptr || node->right == nullptr) {
-      Node *temp = node->left ? node->left : node->right;
-      if (temp == nullptr) {
-        temp = node;
-        node = nullptr;
-      } else {
-        *node = *temp;
-      }
-      delete temp;
-    } else {
-      // Node with two children
-      Node *temp = minValueNodeAVL(node->right);
-      node->data = temp->data;
-      node->right = deleteNodeAVL(node->right, temp->data);
+    if (root->left == nullptr) {
+      Node *temp = root->right;
+      delete root;
+      return temp;
+    } else if (root->right == nullptr) {
+      Node *temp = root->left;
+      delete root;
+      return temp;
     }
+
+    // Node with two children
+    Node *temp = minValueNode(root->right);
+    root->data = temp->data;
+    root->right = deleteNode(root->right, temp->data);
   }
 
-  if (node == nullptr) {
-    return node;
-  }
-
-  node->height = 1 + max(height(node->left), height(node->right));
-  return balanceNode(node, value);
-}
-
-void preOrder(Node *root) {
-  if (root != nullptr) {
-    cout << root->data << " ";
-    preOrder(root->left);
-    preOrder(root->right);
-  }
+  return root;
 }
 
 struct Pos {
@@ -191,7 +106,7 @@ static void compute_layout(Node *r, int x1, int x2, int y, int ys,
     compute_layout(r->right, mid + 4, x2, y + ys, ys, pos);
 }
 
-class AVLSceneImpl : public Scene {
+class BSTSceneImpl : public Scene {
   Node *root = nullptr;
   string buf;
   vector<string> hist;
@@ -219,8 +134,8 @@ class AVLSceneImpl : public Scene {
   }
 
 public:
-  const char *title() const { return "AVL Tree"; }
-  ~AVLSceneImpl() { clear_tree(); }
+  const char *title() const { return "BST Tree"; }
+  ~BSTSceneImpl() { clear_tree(); }
 
   void on_key(int key) {
     static int last_q = 0;
@@ -250,14 +165,14 @@ public:
     } else if (key == '\n') {
       if (!buf.empty()) {
         int k = atoi(buf.c_str());
-        root = insertAVL(root, k);
+        root = insert(root, k);
         push_hist(buf + "I");
         buf.clear();
       }
     } else if (key == 'd') {
       if (!buf.empty()) {
         int k = atoi(buf.c_str());
-        root = deleteNodeAVL(root, k);
+        root = deleteNode(root, k);
         push_hist(buf + "D");
         buf.clear();
       }
@@ -265,7 +180,7 @@ public:
     } else if (key == 'r') {
       int a[] = {30, 20, 40, 10, 25, 35, 50, 5, 15, 27};
       for (int v : a)
-        root = insertAVL(root, v);
+        root = insert(root, v);
     }
   }
 
@@ -274,7 +189,7 @@ public:
     int W = ws.width, H = ws.height;
     clear_scr();
     frame(0, 0, W - 1, H - 1);
-    string bar = " AVL Tree ";
+    string bar = " BST Tree ";
     frame(2, 1, (int)bar.size() + 2, 3);
     printxy(3, 2, bar);
 
@@ -345,5 +260,5 @@ public:
 };
 
 // single global instance + factory
-static AVLSceneImpl g_avl;
-Scene *make_avl_scene() { return (Scene *)&g_avl; }
+static BSTSceneImpl g_bst;
+Scene *make_bst_scene() { return (Scene *)&g_bst; }

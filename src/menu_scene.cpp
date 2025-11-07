@@ -11,7 +11,7 @@ public:
   void render();
 };
 
-static const char *items[] = {"AVL Tree", "Red-Black Tree", "Quit"};
+static const char *items[] = {"BST", "AVL Tree", "Red-Black Tree", "Quit"};
 static int sel = 0;
 
 void MenuScene::on_key(int key) {
@@ -21,8 +21,10 @@ void MenuScene::on_key(int key) {
     sel++;
   else if (key == '\n' || key == KEY_RIGHT) {
     if (sel == 0)
-      set_scene(make_avl_scene());
+      set_scene(make_bst_scene());
     else if (sel == 1)
+      set_scene(make_avl_scene());
+    else if (sel == 2)
       set_scene(make_rbt_scene());
     else
       request_quit();
