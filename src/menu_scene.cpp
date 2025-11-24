@@ -11,9 +11,9 @@ public:
   void render();
 };
 
-static const char *items[] = {"BST",      "AVL Tree", "Red-Black Tree",
-                              "Max Heap", "Min Heap", "Binomial Heap",
-                              "Quit"};
+static const char *items[] = {
+    "BST",      "AVL Tree",      "Red-Black Tree", "Max Heap",
+    "Min Heap", "Binomial Heap", "Fibonacci Heap", "Quit"};
 static int sel = 0;
 
 void MenuScene::on_key(int key) {
@@ -34,6 +34,8 @@ void MenuScene::on_key(int key) {
       set_scene(make_minheap_scene());
     else if (sel == 5)
       set_scene(make_binomial_scene());
+    else if (sel == 6)
+      set_scene(make_fibonacci_scene());
     else
       request_quit();
   } else if (key == 'q') {

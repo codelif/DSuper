@@ -13,3 +13,4 @@ Scene *make_bst_scene();
 Scene *make_maxheap_scene();
 Scene *make_minheap_scene();
 Scene *make_binomial_scene();
+Scene *make_fibonacci_scene();
