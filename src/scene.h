@@ -10,3 +10,4 @@ Scene *make_menu_scene();
 Scene *make_avl_scene();
 Scene *make_rbt_scene();
 Scene *make_bst_scene();
+Scene *make_maxheap_scene();
