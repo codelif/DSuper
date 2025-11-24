@@ -12,3 +12,4 @@ Scene *make_rbt_scene();
 Scene *make_bst_scene();
 Scene *make_maxheap_scene();
 Scene *make_minheap_scene();
+Scene *make_binomial_scene();
