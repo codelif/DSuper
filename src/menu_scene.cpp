@@ -11,8 +11,8 @@ public:
   void render();
 };
 
-static const char *items[] = {"BST", "AVL Tree", "Red-Black Tree", "Max Heap",
-                              "Quit"};
+static const char *items[] = {"BST",      "AVL Tree", "Red-Black Tree",
+                              "Max Heap", "Min Heap", "Quit"};
 static int sel = 0;
 
 void MenuScene::on_key(int key) {
@@ -29,6 +29,8 @@ void MenuScene::on_key(int key) {
       set_scene(make_rbt_scene());
     else if (sel == 3)
       set_scene(make_maxheap_scene());
+    else if (sel == 4)
+      set_scene(make_minheap_scene());
     else
       request_quit();
   } else if (key == 'q') {
