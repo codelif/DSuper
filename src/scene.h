@@ -14,3 +14,7 @@ Scene *make_maxheap_scene();
 Scene *make_minheap_scene();
 Scene *make_binomial_scene();
 Scene *make_fibonacci_scene();
+Scene *make_btree_scene();
+Scene *make_bptree_scene();
+Scene *make_mergesort_scene();
+Scene *make_quicksort_scene();

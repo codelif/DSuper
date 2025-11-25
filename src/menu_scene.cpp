@@ -13,7 +13,8 @@ public:
 
 static const char *items[] = {
     "BST",      "AVL Tree",      "Red-Black Tree", "Max Heap",
-    "Min Heap", "Binomial Heap", "Fibonacci Heap", "Quit"};
+    "Min Heap", "Binomial Heap", "Fibonacci Heap", "B-Tree",
+    "B+ Tree",  "Merge Sort",    "Quick Sort",     "Quit"};
 static int sel = 0;
 
 void MenuScene::on_key(int key) {
@@ -36,6 +37,14 @@ void MenuScene::on_key(int key) {
       set_scene(make_binomial_scene());
     else if (sel == 6)
       set_scene(make_fibonacci_scene());
+    else if (sel == 7)
+      set_scene(make_btree_scene());
+    else if (sel == 8)
+      set_scene(make_bptree_scene());
+    else if (sel == 9)
+      set_scene(make_mergesort_scene());
+    else if (sel == 10)
+      set_scene(make_quicksort_scene());
     else
       request_quit();
   } else if (key == 'q') {
@@ -58,13 +67,13 @@ void MenuScene::render() {
   frame(hx, 2, hw, 3);
   fill_text(hx + 1, 3, hw - 2, head);
 
-  int mw = 44, mh = (int)(sizeof(items) / sizeof(items[0])) * 3 + 2;
+  int mw = 44, mh = (int)(sizeof(items) / sizeof(items[0])) * 2 + 2;
   int mx = max(2, (W - mw) / 2);
   int my = max(6, (H - mh) / 2);
   frame(mx, my, mw, mh);
 
   for (int i = 0; i < (int)(sizeof(items) / sizeof(items[0])); ++i) {
-    int y = my + 1 + i * 3;
+    int y = my + 1 + i * 2;
     string bullet = (i == sel) ? "▶ " : "  ";
     string line = bullet + string(items[i]);
     fill_text(mx + 2, y, mw - 4, line);
